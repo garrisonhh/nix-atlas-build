@@ -35,7 +35,12 @@
         buildInputs = atlasInputs;
         buildPhase = ''
           make build
-          # TODO should I 'make check' 'make ptcheck' 'make time' here?
+        '';
+
+        checkPhase = ''
+          make check
+          make ptcheck
+          make time
         '';
 
         installPhase = ''
