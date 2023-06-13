@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = github:NixOs/nixpkgs/nixos-23.05;
   };
-  
+
   outputs = { self, nixpkgs }:
     let
       system = "x86_64-linux";
@@ -20,12 +20,13 @@
         sha256 = "sha256:04112hp3b1650ghp56sk35185wjwx9pk210gp9ybh6s9k6fmnq76";
       };
 
-      package = mkDerivation {
+      mkPackage = cripple: mkDerivation {
         name = "atlas-base";
         src = self;
 
         configurePhase = ''
           ${atlasPath}/configure \
+            ${if (cripple) then "--cripple-atlas-performance" else ""}\
             -Fa acg '-Wno-format-security' \
             --prefix="$out" \
             --incdir="$out/include" \
@@ -48,6 +49,10 @@
         '';
       };
     in {
-      packages.${system}.default = package;
+      packages.${system} = {
+        default = mkPackage false;
+        release = mkPackage false;
+        crippled = mkPackage true;
+      };
     };
 }
